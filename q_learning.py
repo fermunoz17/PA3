@@ -74,16 +74,19 @@ transitions = {
     ('TD 10a', 'any'): [('terminal', 1.0, +1)],
 }
 
-# Epsilon-greedy action selection
+# Updated epsilon-greedy selection with 80% best, 20% random
 def epsilon_greedy(state, epsilon):
     actions = available_actions.get(state, [])
     if not actions:
         return None
-    if random.random() < epsilon:
-        return random.choice(actions)
-    return max(actions, key=lambda a: Q[(state, a)])
 
-# Q-learning function
+    best_action = max(actions, key=lambda a: Q[(state, a)])
+    if random.random() < (1 - epsilon):
+        return best_action
+    else:
+        return random.choice(actions)
+
+# Q-learning training loop
 def q_learning():
     epsilon = INITIAL_EPSILON
     episode = 0
@@ -141,6 +144,6 @@ def q_learning():
         best_action = max(actions, key=lambda a: Q[(state, a)])
         print(f"Best action for {state}: {best_action}")
 
-# Run the learning loop
+# Run training
 if __name__ == "__main__":
     q_learning()
